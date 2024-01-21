@@ -1,0 +1,5 @@
+flask==3.0.1 
+pyjwt==2.8.0
+pylint==3.0.3
+jedi==0.19.1
+flask_mysqldb==2.0.0

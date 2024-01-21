@@ -1,5 +1,0 @@
-black
-fastapi
-pytest
-pylint
-uvicorn[standard]
