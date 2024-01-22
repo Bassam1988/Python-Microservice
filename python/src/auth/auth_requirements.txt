@@ -3,3 +3,17 @@ pyjwt==2.8.0
 pylint==3.0.3
 jedi==0.19.1
 flask_mysqldb==2.0.0
+astroid
+click
+isort
+itsdangerous
+Jinja2
+lazy-object-proxy
+MarkupSafe
+mccabe
+mysqlclient
+parso
+platformdirs
+toml
+werkzeug
+wrapt
