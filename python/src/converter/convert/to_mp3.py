@@ -4,32 +4,33 @@ import moviepy.editor
 
 
 def start(message, fs_videos, fs_mp3s, channel):
-    message=json.loads(message)
+    message = json.loads(message)
 
-    #empty temp file
-    tf = tempfile.NamedTemporaryFile()
-    
-    #video contents
-    out = fs_videos.get(ObjectId(message["video_fid"]))
+    # Generate a temporary file path
+    temp_file_path = tempfile.mktemp(suffix='.mp4')
 
-    tf.write(out.read())
+    # Write video contents to the temp file
+    with open(temp_file_path, 'wb') as tf:
+        out = fs_videos.get(ObjectId(message["video_fid"]))
+        tf.write(out.read())
 
-    # convert
-    audio=moviepy.editor.VideoFileClip(tf.name).audio
-    tf.close()
+    # Convert to audio
+    audio = moviepy.editor.VideoFileClip(temp_file_path).audio
 
-    # write audio to file
+    # Write audio to a new temp file
     tf_path = tempfile.gettempdir() + f"/{message['video_fid']}.mp3"
     audio.write_audiofile(tf_path)
 
-    f = open(tf_path, "rb")
-    data = f.read()
-    fid = fs_mp3s.put(data)
-    f.close()
+    with open(tf_path, "rb") as f:
+        data = f.read()
+        fid = fs_mp3s.put(data)
+
+    # Clean up temp files
+    os.remove(temp_file_path)
     os.remove(tf_path)
 
+    # Update message and publish
     message["mp3_fid"] = str(fid)
-
     try:
         channel.basic_publish(
             exchange="",
@@ -41,4 +42,4 @@ def start(message, fs_videos, fs_mp3s, channel):
         )
     except Exception as err:
         fs_mp3s.delete(fid)
-        return "faild to publish message"
+        return "failed to publish message"

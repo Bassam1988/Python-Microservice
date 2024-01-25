@@ -27,17 +27,20 @@ def login():
 @server.route("/upload", methods=["POST"])
 def upload():
     access, err= validate.token(request)
-
+    print("access: "+ access)
     access=json.loads(access)
-
+    
     if access["admin"]:
+        print("inside admin")
         if len(request.files)>1 or len(request.files)<1:
             return "exactly one file required", 400
         
         for _, f in request.files.items():
+            print("inside for")
             err=util.upload(f,fs,channel, access)
+            print("after upload")
             if err:
-                return err
+                return str(err),500
         
         return "success", 200
 
