@@ -23,7 +23,12 @@ mongo_mp3=PyMongo(
     )
 fs_mp3s=gridfs.GridFS(mongo_mp3.db)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters(
+        host="rabbitmq",
+        heartbeat=600,  # Heartbeat timeout in seconds
+        blocked_connection_timeout=300
+                                                               ))
 channel=connection.channel()
 
 @server.route("/login",methods=["POST"])
